@@ -1,0 +1,23 @@
+.App {
+    text-align: left;
+    min-height: 100vh;
+    /* Минимальная высота 100% высоты экрана */
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    /* Растягиваем основное содержимое */
+    background: var(--color-header-hover);
+
+
+}
+
+:root {
+    --color-primary: #1a73e8;
+    --color-surface: #000000;
+    --color-surface-alt: #f8f9fa;
+    --color-border: #ccc;
+    --color-hover: #e3f2fd;
+}

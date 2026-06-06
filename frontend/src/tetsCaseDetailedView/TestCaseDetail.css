@@ -1,0 +1,197 @@
+.test-case-container {
+    display: flex;
+    padding: 20px;
+    height: calc(100vh - 40px); /* Уменьшение высоты на отступы */
+    box-sizing: border-box;
+}
+
+.test-case-detail-view {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    margin-right: 20px; /* Отступ в 20px от правой части */
+}
+
+.test-case-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: var(--color-background);
+}
+
+.test-case-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.test-case-table th, .test-case-table td {
+    border: 1px solid var(--color-border);
+    padding: 10px;
+    text-align: left;
+}
+
+.test-case-table th {
+    background-color: var(--color-surface-alt);
+}
+
+.test-case-table tr:nth-child(even) {
+    background-color: var(--color-surface-alt);
+}
+
+.test-case-table tr:hover {
+    background-color: var(--color-hover);
+}
+
+.test-case-meta {
+    flex: 0 0 fit-content; /* Фиксированная ширина */
+    padding: 20px;
+    background-color: var(--color-surface);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    height: fit-content; /* Высота по содержимому */
+    margin-left: auto; /* Прижать к правому краю */
+}
+
+.meta-item label {
+    margin-right: 5px;
+    min-width: fit-content; /* Устанавливаем минимальную ширину для выравнивания */
+    display: flex;
+    align-items: center;
+}
+
+.meta-item {
+    margin-bottom: 10px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.editable-input {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+}
+
+.editable-input:focus {
+    outline: none;
+}
+
+.editable-textarea {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;  /*  соответствия высоты строки */
+    font-family: inherit;  /*  наследования шрифта */
+    resize: none;
+    overflow: hidden;
+}
+
+.editable-textarea:focus {
+    outline: none;
+    /*border-bottom: 1px solid #000;*/
+}
+
+/* Стиль для кнопок */
+.button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-family: inherit;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-right: 10px
+}
+
+/* Основные стили кнопок */
+.button-primary {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+}
+
+.button-primary:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.button-secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-surface);
+}
+
+.button-secondary:hover {
+    background-color: var(--color-secondary-hover);
+}
+
+.button-danger {
+    background-color: var(--color-danger);
+    color: var(--color-surface);
+}
+
+.button-danger:hover {
+    background-color: var(--color-danger-hover);
+}
+
+/* Дополнительные стили для кнопок */
+.add-step-button2 {
+    background-color: var(--color-success);
+    color: var(--color-surface);
+    margin-top: 10px;
+}
+
+.add-step-button2:hover {
+    background-color: var(--color-success-hover);
+}
+
+.delete-step-button2 {
+    background-color: var(--color-danger);
+    color: var(--color-surface);
+}
+
+.delete-step-button:hover {
+    background-color: var(--color-danger-hover);
+}
+
+.edit-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-family: inherit;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.edit-button:hover {
+    background-color: var(--color-primary-hover);
+}
+
+
+/* stiles for dropdown */
+select {
+    /*padding: 10px;*/
+    font-size: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    background-color: var(--color-surface);
+    color: var(--color-background);
+    flex-grow: 1;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}

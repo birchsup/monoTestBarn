@@ -1,0 +1,115 @@
+.test-case-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.test-case-form {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    gap: 20px;
+}
+
+.test-case-detail {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-surface);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    gap: 20px;
+    flex: 1;
+    height: fit-content;
+    max-width: 300px; /* Ограничение ширины */
+    margin-left: 0; /* Прижать к левому краю */
+}
+
+.test-case-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 2; /* Увеличение ширины правой части */
+    background-color: var(--color-surface-alt);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Позволяет контейнеру увеличиваться по высоте */
+    max-height: 80vh; /* Ограничение максимальной высоты */
+}
+
+.form-group, .form-group-step {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label, .form-group-step label {
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group select,
+.form-group-step textarea {
+    padding: 10px;
+    font-size: 1em;
+    resize: vertical; /* Позволяет изменять высоту textarea */
+}
+
+.form-group-step .step-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.form-group-step .result-field {
+    flex: 1;
+    margin-bottom: 10px;
+    min-width: 200px; /* Фиксированная ширина полей */
+}
+
+.add-step-button {
+    background-color: var(--color-primary);
+    border: none;
+    color: var(--color-surface);
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    height: 68px; /* Высота кнопки соответствует высоте полей */
+}
+
+.add-step-button:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.create-button {
+    background-color: var(--color-primary);
+    border: none;
+    color: var(--color-surface);
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    width: fit-content; /* Ширина по содержимому */
+    align-self: center; /* Выравнивание кнопки по центру */
+}
+
+.create-button:hover {
+    background-color: var(--color-primary-hover);
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* Дополнительные стили для расстояния между полями Name и Preconditions */
+.form-group input[name="name"] {
+    margin-bottom: 20px; /* Добавление отступа снизу */
+}

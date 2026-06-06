@@ -1,0 +1,5 @@
+.home {
+    display: flex;
+    color: var(--color-header-hover);
+    text-align: center;
+}

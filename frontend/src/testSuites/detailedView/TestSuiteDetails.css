@@ -1,0 +1,71 @@
+.test-suite-details-container {
+    padding: 20px;
+    background-color: var(--color-surface-alt);
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.test-suite-details-container h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.test-suite-details-container p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+.test-suite-details-container button {
+    margin-bottom: 20px;
+}
+
+.test-cases-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.test-cases-table th,
+.test-cases-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.test-cases-table th {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+}
+
+.test-cases-table tr:hover {
+    background-color: var(--color-hover);
+}
+
+.test-suite-details-container input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.test-suite-details-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.test-suite-details-container ul li {
+    margin: 5px 0;
+}
+
+.test-suite-details-container ul li button {
+    margin-left: 10px;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    background-color: var(--color-hover);
+}

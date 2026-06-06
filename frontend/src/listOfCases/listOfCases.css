@@ -1,0 +1,53 @@
+/* Общие стили для таблицы списка тест-кейсов */
+.test-case-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: var(--font-base);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Стили для заголовков таблицы списка тест-кейсов */
+.test-case-list-table th, .test-case-list-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-background);
+}
+
+.test-case-list-table th {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    text-align: left;
+    font-weight: bold; /* Делаем текст жирным */
+}
+
+/* Стили для строк таблицы списка тест-кейсов */
+.test-case-list-table tr:nth-child(even) {
+    background-color: var(--color-surface-alt);
+}
+
+.test-case-list-table tr:nth-child(odd) {
+    background-color: var(--color-surface);
+}
+
+.test-case-list-table .clickable-row {
+    cursor: pointer; /* Изменяем указатель мыши */
+    transition: background-color 0.8s ease; /* Добавляем плавный переход для фона */
+}
+
+.test-case-list-table .clickable-row:hover {
+    background-color: var(--color-hover);
+}
+
+/* Стили для мобильных устройств */
+@media (max-width: 768px) {
+    .test-case-list-table {
+        font-size: 14px; /* Уменьшаем размер шрифта на мобильных устройствах */
+    }
+
+    .test-case-list-table th, .test-case-list-table td {
+        padding: 10px; /* Уменьшаем отступы */
+    }
+}

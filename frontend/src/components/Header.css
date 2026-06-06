@@ -1,0 +1,68 @@
+.app-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--color-header-bg);
+    color: var(--color-surface);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 30px; /* Увеличено расстояние для улучшения читаемости */
+}
+
+.logo-image {
+    height: 40px; /* Установите нужный размер логотипа */
+    margin-right: 10px;
+}
+
+.header-nav {
+    display: flex;
+    gap: 15px; /* Увеличено расстояние между кнопками */
+}
+
+.header-button {
+    background-color: var(--color-header-bg);
+    border: none;
+    color: var(--color-surface);
+    padding: 10px 20px;
+    min-width: 160px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    white-space: nowrap;
+}
+
+.header-button:hover {
+    background-color: var(--color-header-hover);
+    color: var(--color-primary);
+}
+
+.header-button.active {
+    /*color: #2ff1f8; !* Цвет текста для активной кнопки *!*/
+    position: relative;
+}
+
+.header-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-primary);
+}

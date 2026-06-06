@@ -1,0 +1,144 @@
+.test-run-list-container {
+    padding: 20px;
+    background-color: var(--color-background);
+    color: var(--color-surface);
+    font-family: var(--font-base);
+}
+
+.test-run-list-container h1 {
+    color: var(--color-surface);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.test-suite-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.test-suite-block {
+    background-color: var(--color-background);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.test-suite-block h2 {
+    color: var(--color-surface);
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.test-run-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-header-hover);
+    color: var(--color-surface);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.test-run-list-table th,
+.test-run-list-table td {
+    border: 1px solid var(--color-border-dark);
+    padding: 12px;
+    text-align: center;
+}
+
+.test-run-list-table th {
+    background-color: var(--color-header-hover);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.test-run-list-table tr:nth-child(even) {
+    background-color: var(--color-background);
+}
+
+.test-run-list-table tr:hover {
+    background-color: var(--color-header-hover);
+}
+
+/* Колонка Status: Выровнена по центру */
+.test-run-list-table td.status-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Индикаторы статусов */
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Цвета индикаторов статусов (менее яркие) */
+.status-indicator.pending {
+    background-color: var(--status-pending);
+}
+
+.status-indicator.running {
+    background-color: var(--status-running);
+}
+
+.status-indicator.passed {
+    background-color: var(--status-passed);
+}
+
+.status-indicator.failed {
+    background-color: var(--status-failed);
+}
+
+.status-indicator.skipped {
+    background-color: var(--status-skipped);
+}
+
+/* Кнопки смены статуса (приглушенные цвета) */
+.status-button {
+    border: none;
+    padding: 5px 10px;
+    margin: 3px;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    opacity: 0.85;
+}
+
+/* Более мягкие цвета кнопок */
+.status-button.pending {
+    background-color: var(--status-btn-pending);
+    color: #ddd;
+}
+
+.status-button.running {
+    background-color: var(--status-btn-running);
+    color: #ddd;
+}
+
+.status-button.passed {
+    background-color: var(--status-btn-passed);
+    color: #ddd;
+}
+
+.status-button.failed {
+    background-color: var(--status-btn-failed);
+    color: #ddd;
+}
+
+.status-button.skipped {
+    background-color: var(--status-btn-skipped);
+    color: #ddd;
+}
+
+.status-button:hover {
+    opacity: 1;
+}

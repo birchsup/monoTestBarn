@@ -1,0 +1,122 @@
+:root {
+    --font-base: Arial, sans-serif;
+    --color-background: #1e1e1e;
+    --color-surface: #ffffff;
+    --color-surface-alt: #f9f9f9;
+    --color-primary: #007BFF;
+    --color-primary-hover: #0056b3;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-secondary: #6c757d;
+    --color-secondary-hover: #5a6268;
+    --color-header-bg: #000000;
+    --color-header-hover: #282c34;
+    --color-border: #ddd;
+    --color-border-dark: #444;
+    --status-pending: #808080;
+    --status-running: #4b6cb7;
+    --status-passed: #4caf50;
+    --status-failed: #e57373;
+    --status-skipped: #f4a261;
+    --status-btn-pending: #666;
+    --status-btn-running: #3a5da7;
+    --status-btn-passed: #3e8e41;
+    --status-btn-failed: #b94a48;
+    --status-btn-skipped: #d68a43;
+    --color-hover: #f1f1f1;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-base);
+    background: var(--color-background);
+    color: var(--color-surface);
+}
+
+.container {
+    padding: 20px;
+    background-color: var(--color-surface-alt);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: var(--color-background);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    color: var(--color-background);
+}
+
+.table th {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+}
+
+.table tr:hover {
+    background-color: var(--color-hover);
+}
+
+.btn {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.btn-success {
+    background-color: var(--color-success);
+}
+
+.btn-success:hover {
+    background-color: var(--color-success-hover);
+}
+
+.btn-danger {
+    background-color: var(--color-danger);
+}
+
+.btn-danger:hover {
+    background-color: var(--color-danger-hover);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--color-header-bg);
+    color: var(--color-surface);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-button {
+    background-color: var(--color-header-bg);
+    color: var(--color-surface);
+    border: none;
+    padding: 10px 20px;
+    min-width: 160px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.header-button:hover {
+    background-color: var(--color-header-hover);
+    color: var(--color-primary);
+}
