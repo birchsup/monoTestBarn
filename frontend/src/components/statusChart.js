@@ -2,27 +2,22 @@ import React from 'react';
 import { Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
 
-const statuses = ['pending', 'running', 'passed', 'failed', 'skipped'];
+const statuses = ['passed', 'failed', 'blocked', 'skipped', 'not_run'];
 const colors = {
-    pending: 'grey',
-    running: 'blue',
     passed: 'green',
     failed: 'red',
-    skipped: 'orange'
+    blocked: 'purple',
+    skipped: 'orange',
+    not_run: 'grey'
 };
 
-const StatusChart = ({ testStatuses }) => {
-    // Подсчет количества каждого статуса
-    const statusCounts = statuses.reduce((acc, status) => {
-        acc[status] = Object.values(testStatuses).filter(s => s === status).length;
-        return acc;
-    }, {});
-
+// summary comes from GET /test-runs/{id}: { passed, failed, blocked, skipped, not_run }.
+const StatusChart = ({ summary }) => {
     const chartData = {
         labels: statuses,
         datasets: [
             {
-                data: Object.values(statusCounts),
+                data: statuses.map(status => summary?.[status] || 0),
                 backgroundColor: statuses.map(status => colors[status]),
             },
         ],

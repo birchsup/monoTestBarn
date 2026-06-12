@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './createTestCase.css';
 import '../styles/theme.css';
-import {link} from "../ngrock";
+import { apiPost, errorMessage } from '../api/client';
 
 const CreateTestCase = () => {
     const [testCase, setTestCase] = useState({
@@ -40,24 +40,13 @@ const CreateTestCase = () => {
             steps: [...prevTestCase.steps, { step: testCase.steps.length + 1, action: '', expected_result: '' }]
         }));
     };
-    const apiUrl = `${link}/testcases`.replace(/([^:]\/)\/+/g, "$1");
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true'
-            },
-            body: JSON.stringify({ id: testCase.id, test: testCase })
-        });
-
-        if (response.ok) {
+        try {
+            await apiPost('/testcases', { test: testCase });
             alert('Test case created successfully!');
-            // Clear form or redirect to another page
-        } else {
-            alert('Failed to create test case.');
+        } catch (err) {
+            alert(`Failed to create test case: ${errorMessage(err)}`);
         }
     };
 

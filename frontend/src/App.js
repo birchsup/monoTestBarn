@@ -26,7 +26,7 @@ function App() {
                         <Route path="/testcases/:id" element={<TestCaseDetail />} />
                         <Route path="/create" element={<CreateTestCase />} />
                         <Route path="/test-suites" element={<TestSuitesList/>} />
-                        <Route path="/test-suite" element={<TestSuiteDetails />} />
+                        <Route path="/test-suites/:id" element={<TestSuiteDetails />} />
                         <Route path="/test-runs" element={<TestRunsList />} />
                         <Route path='/test-runs/:id' element={<TestRunDetailedView />} />
                         <Route path="/add-test-suite" element={<AddTestSuite />} />

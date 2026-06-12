@@ -65,9 +65,11 @@ func main() {
 	// CORS
 	corsHandler := handlers.CORS(
 		handlers.AllowedOrigins(allowedOrigins()),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}),
 		// AllowedHeaders appends values. Keep a single explicit list to avoid accidental invalid header names.
 		handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "Ngrok-Skip-Browser-Warning"}),
+		// Pagination metadata must be explicitly exposed for browser clients.
+		handlers.ExposedHeaders([]string{"X-Total-Count", "X-Limit", "X-Offset"}),
 	)(r)
 
 	log.Println("Server is running on port 8080")

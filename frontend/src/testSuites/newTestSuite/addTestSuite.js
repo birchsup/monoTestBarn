@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './addTestSuite.css';
 import '../../styles/theme.css';
+import { apiPost, errorMessage } from '../../api/client';
 
 const AddTestSuite = () => {
     const [name, setName] = useState('');
@@ -13,27 +14,11 @@ const AddTestSuite = () => {
         e.preventDefault();
         setError('');
 
-        const requestBody = {
-            name,
-            description,
-        };
-
         try {
-            const response = await fetch('http://localhost:8080/add-test-suite', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create test suite');
-            }
-
+            await apiPost('/test-suites', { name, description });
             navigate('/test-suites');
-        } catch (error) {
-            setError(error.message);
+        } catch (err) {
+            setError(errorMessage(err));
         }
     };
 
@@ -44,18 +29,18 @@ const AddTestSuite = () => {
             <form onSubmit={handleSubmit} className="test-suite-form">
                 <label>
                     Name:
-                    <input 
-                        type="text" 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)} 
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         required
                     />
                 </label>
                 <label>
                     Description:
-                    <textarea 
-                        value={description} 
-                        onChange={(e) => setDescription(e.target.value)} 
+                    <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                         required
                     />
                 </label>

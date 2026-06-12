@@ -1,136 +1,179 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import './TestSuiteDetails.css';
 import '../../styles/theme.css';
-import { link } from "../../ngrock";
+import { apiGet, apiGetList, apiPost, apiPut, apiDelete, errorMessage } from '../../api/client';
 
 const TestSuiteDetails = () => {
     const [testSuite, setTestSuite] = useState(null);
+    const [notFound, setNotFound] = useState(false);
+    const [error, setError] = useState('');
     const [editMode, setEditMode] = useState(false);
+    const [editingInfo, setEditingInfo] = useState(false);
+    const [suiteForm, setSuiteForm] = useState({ name: '', description: '' });
     const [allTestCases, setAllTestCases] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const { search } = useLocation();
+    const { id } = useParams();
     const navigate = useNavigate();
-    const id = new URLSearchParams(search).get('id');
-    const apiUrlDetails = `${link}/test-suite?id=${id}`.replace(/([^:]\/)\/+/g, "$1");
 
-    const fetchTestSuiteDetails = async () => {
+    const fetchTestSuiteDetails = useCallback(async () => {
         try {
-            const response = await fetch(apiUrlDetails, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                }
-            });
-            const data = await response.json();
+            const data = await apiGet(`/test-suites/${id}`);
             setTestSuite(data);
-        } catch (error) {
-            console.error('Error fetching test suite details:', error);
+            setSuiteForm({ name: data.name, description: data.description || '' });
+        } catch (err) {
+            if (err.status === 404) {
+                setNotFound(true);
+            } else {
+                setError(errorMessage(err));
+            }
         }
-    };
-
-    useEffect(() => {
-        fetchTestSuiteDetails();
     }, [id]);
 
     useEffect(() => {
-        fetch(`${link}/testcases`)
-            .then(response => response.json())
-            .then(data => setAllTestCases(data))
-            .catch(error => console.error('Error fetching all test cases:', error));
+        fetchTestSuiteDetails();
+    }, [fetchTestSuiteDetails]);
+
+    useEffect(() => {
+        apiGetList('/testcases')
+            .then(({ items }) => setAllTestCases(items))
+            .catch(err => console.error('Error fetching all test cases:', err));
     }, []);
 
-    const handleRowClick = (id) => {
-        navigate(`/testcases/${id}`);
+    const handleRowClick = (caseId) => {
+        navigate(`/testcases/${caseId}`);
     };
 
     const handleDeleteTestCase = async (suiteId, caseId) => {
+        setError('');
         try {
-            await fetch(`${link}/test-suite/remove-case?suite_id=${suiteId}&case_id=${caseId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                },
-            });
-            fetchTestSuiteDetails();
-        } catch (error) {
-            console.error('Error deleting test case:', error);
+            await apiDelete(`/test-suites/${suiteId}/cases/${caseId}`);
+            await fetchTestSuiteDetails();
+        } catch (err) {
+            setError(errorMessage(err));
         }
     };
 
     const handleAddTestCase = async (suiteId, caseId) => {
-        const payload = { suite_id: suiteId, case_ids: [caseId] };
-        const apiUrl = `${link}/test-suites/add-cases`.replace(/([^:]\/)\/+/g, "$1");
-
+        setError('');
         try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+            // :batch is idempotent and keeps existing suite links intact
+            // (plain POST /test-suites/{id}/cases has replace semantics).
+            const { results } = await apiPost(`/test-suites/${suiteId}/cases:batch`, { case_ids: [caseId] });
+            const failed = results.find(r => r.status === 'error');
+            if (failed) {
+                setError(failed.error.message);
             }
-
             await fetchTestSuiteDetails();
-        } catch (error) {
-            console.error('Error adding test case:', error);
+        } catch (err) {
+            setError(errorMessage(err));
         }
     };
 
     const handleCreateAndAddTestCase = async (suiteId, testCaseName) => {
+        setError('');
         try {
-            const apiUrl = `${link}/testcases`.replace(/([^:]\/)\/+/g, "$1");
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                },
-                body: JSON.stringify({
-                    test: {
-                        name: testCaseName,
-                        preconditions: "",
-                        priority: "",
-                        isAutomated: false,
-                        steps: [],
-                        created_by: "",
-                        created_at: new Date().toISOString().split('T')[0]
-                    }
-                })
+            const newTestCase = await apiPost('/testcases', {
+                test: {
+                    name: testCaseName,
+                    preconditions: "",
+                    priority: "",
+                    isAutomated: false,
+                    steps: [],
+                    created_by: "",
+                    created_at: new Date().toISOString().split('T')[0]
+                }
             });
-
-            const newTestCase = await response.json();
 
             if (!newTestCase || !newTestCase.id) {
                 throw new Error("Failed to create test case: Invalid response from server");
             }
 
             await handleAddTestCase(suiteId, newTestCase.id);
-        } catch (error) {
-            console.error('Error creating test case:', error);
+        } catch (err) {
+            setError(errorMessage(err));
         }
     };
 
-    if (!testSuite) {
-        return <p>Loading...</p>;
+    const handleSaveSuiteInfo = async () => {
+        setError('');
+        try {
+            const updated = await apiPut(`/test-suites/${id}`, suiteForm);
+            setTestSuite(prev => ({ ...prev, name: updated.name, description: updated.description }));
+            setEditingInfo(false);
+        } catch (err) {
+            setError(errorMessage(err));
+        }
+    };
+
+    const handleStartRun = async () => {
+        setError('');
+        try {
+            const run = await apiPost('/test-runs', {
+                suite_id: parseInt(id, 10),
+                run_details: { name: `Run of suite "${testSuite.name}"` }
+            });
+            navigate(`/test-runs/${run.id}`);
+        } catch (err) {
+            setError(errorMessage(err));
+        }
+    };
+
+    if (notFound) {
+        return (
+            <div className="test-suite-details-container">
+                <p>Test suite not found.</p>
+                <button onClick={() => navigate('/test-suites')}>Back to Test Suites</button>
+            </div>
+        );
     }
 
+    if (!testSuite) {
+        return error ? <p className="error-message">{error}</p> : <p>Loading...</p>;
+    }
+
+    const suiteCases = testSuite.test_cases || [];
     const filteredTestCases = allTestCases.filter(testCase =>
         testCase.test.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
         <div className="test-suite-details-container">
-            <h1>{testSuite.name}</h1>
-            <p>{testSuite.description}</p>
+            {error && <p className="error-message" data-test-id="error-message">{error}</p>}
+            {editingInfo ? (
+                <div className="suite-info-edit" data-test-id="suite-info-edit">
+                    <input
+                        type="text"
+                        value={suiteForm.name}
+                        onChange={(e) => setSuiteForm({ ...suiteForm, name: e.target.value })}
+                        data-test-id="suite-name-input"
+                    />
+                    <textarea
+                        value={suiteForm.description}
+                        onChange={(e) => setSuiteForm({ ...suiteForm, description: e.target.value })}
+                        data-test-id="suite-description-input"
+                    />
+                    <button onClick={handleSaveSuiteInfo} data-test-id="suite-info-save">Save</button>
+                    <button onClick={() => {
+                        setSuiteForm({ name: testSuite.name, description: testSuite.description || '' });
+                        setEditingInfo(false);
+                    }}>
+                        Cancel
+                    </button>
+                </div>
+            ) : (
+                <>
+                    <h1>{testSuite.name}</h1>
+                    <p>{testSuite.description}</p>
+                    <button onClick={() => setEditingInfo(true)} data-test-id="suite-info-edit-button">
+                        Edit Suite Info
+                    </button>
+                </>
+            )}
+            <button onClick={handleStartRun} data-test-id="start-run-button" disabled={suiteCases.length === 0}>
+                Start Test Run
+            </button>
             <button onClick={() => setEditMode(!editMode)}>
                 {editMode ? 'Done' : 'Edit'}
             </button>
@@ -143,7 +186,7 @@ const TestSuiteDetails = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {testSuite.test_cases.map(testCase => (
+                    {suiteCases.map(testCase => (
                         <tr
                             key={testCase.id}
                             onClick={() => !editMode && handleRowClick(testCase.id)}

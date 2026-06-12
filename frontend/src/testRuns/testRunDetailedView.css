@@ -81,12 +81,12 @@
 }
 
 /* Цвета индикаторов статусов (менее яркие) */
-.status-indicator.pending {
-    background-color: var(--status-pending);
+.status-indicator.not_run {
+    background-color: var(--status-not-run);
 }
 
-.status-indicator.running {
-    background-color: var(--status-running);
+.status-indicator.blocked {
+    background-color: var(--status-blocked);
 }
 
 .status-indicator.passed {
@@ -114,13 +114,13 @@
 }
 
 /* Более мягкие цвета кнопок */
-.status-button.pending {
-    background-color: var(--status-btn-pending);
+.status-button.not_run {
+    background-color: var(--status-btn-not-run);
     color: #ddd;
 }
 
-.status-button.running {
-    background-color: var(--status-btn-running);
+.status-button.blocked {
+    background-color: var(--status-btn-blocked);
     color: #ddd;
 }
 

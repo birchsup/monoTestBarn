@@ -18,7 +18,9 @@
 ### Аутентификация / заголовки
 - Аутентификация в коде не реализована (middleware/auth отсутствуют).
 - CORS включён глобально.
-- Разрешённые методы: `GET, POST, PUT, DELETE, OPTIONS`.
+- Разрешённые методы: `GET, POST, PUT, PATCH, DELETE, OPTIONS`.
+- Заголовки пагинации (`X-Total-Count`, `X-Limit`, `X-Offset`) включены в
+  `Access-Control-Expose-Headers`, иначе браузерные клиенты их не видят.
 - Разрешённые заголовки задаются двумя вызовами `AllowedHeaders(...)` (см. спорные моменты).
 - В handlers test-cases выставляется заголовок ответа `ngrok-skip-browser-warning: true`.
 
