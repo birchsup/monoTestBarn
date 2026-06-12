@@ -1,0 +1,18 @@
+# Запуск всего проекта одной командой из корня репо:
+#   docker compose up --build
+# Поднимает БД, миграции, бэкенд (localhost:8080) и фронт (localhost:3000).
+include:
+  - backend/docker-compose.yml
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Адрес бэкенда, по которому к нему ходит браузер (вшивается в бандл при сборке)
+        REACT_APP_BACKEND_URL: http://localhost:8080
+    container_name: testbarn-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
