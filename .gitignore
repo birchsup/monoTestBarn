@@ -15,6 +15,14 @@ frontend/build/
 frontend/coverage/
 npm-debug.log*
 
+# --- Playwright (screenshot demo) ---
+# Run artifacts are throwaway; the committed baseline lives in
+# frontend/e2e/*-snapshots/ and must stay tracked.
+frontend/playwright-report/
+frontend/test-results/
+frontend/blob-report/
+.playwright-mcp/
+
 # --- Backend (Go) ---
 # скомпилированные бинарники
 /backend/backend

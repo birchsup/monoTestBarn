@@ -20,8 +20,23 @@
 
 .create-actions {
     display: flex;
+    align-items: center;
     gap: var(--space-2);
     margin-top: var(--space-2);
+}
+
+/* DEMO marker badge — visual anchor for the Playwright screenshot demo. */
+.demo-marker {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #fff;
+    background: var(--color-primary, #2563eb);
+    margin-right: auto;
 }
 
 .field-error {

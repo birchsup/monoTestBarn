@@ -129,7 +129,11 @@ const CreateTestCase = () => {
                             </div>
                         </div>
                     ))}
-                    <div className="create-actions">
+                    {/* DEMO marker — screenshot test watches this action row. The
+                        "break CSS" demo patch (docs/demo/break-css.patch) shifts/recolors
+                        this area so the visual diff is obvious. */}
+                    <div className="create-actions" data-test-id="create-actions">
+                        <span className="demo-marker" data-test-id="demo-marker">DEMO</span>
                         <button type="button" onClick={addStep} className="btn btn-secondary" data-test-id="button-addStep">
                             Add Step
                         </button>
