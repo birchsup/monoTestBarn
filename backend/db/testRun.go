@@ -42,6 +42,14 @@ type TestRunCase struct {
 	ExecutedBy *string         `json:"executed_by,omitempty"`
 }
 
+// TestRunCaseDetails is a single run case with its run context (for deep links from the UI).
+type TestRunCaseDetails struct {
+	RunID      int             `json:"run_id"`
+	SuiteID    *int            `json:"suite_id,omitempty"`
+	RunDetails json.RawMessage `json:"run_details"`
+	TestRunCase
+}
+
 type TestRunSummary struct {
 	Passed  int `json:"passed"`
 	Failed  int `json:"failed"`
@@ -276,6 +284,51 @@ func GetTestRunByID(runID int) (TestRunDetails, error) {
 	}
 	if err := rows.Err(); err != nil {
 		return TestRunDetails{}, err
+	}
+
+	return details, nil
+}
+
+func GetTestRunCaseByID(runID int, caseID int) (TestRunCaseDetails, error) {
+	ctx := context.Background()
+
+	var details TestRunCaseDetails
+	err := DBPool.QueryRow(ctx, `
+		SELECT id, suite_id, run_details
+		FROM test_runs
+		WHERE id = $1
+	`, runID).Scan(&details.RunID, &details.SuiteID, &details.RunDetails)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
+			return TestRunCaseDetails{}, ErrTestRunNotFound
+		}
+		return TestRunCaseDetails{}, err
+	}
+
+	var comment sql.NullString
+	var executedAt sql.NullTime
+	var executedBy sql.NullString
+	err = DBPool.QueryRow(ctx, `
+		SELECT trc.case_id, tc.test, trc.status, trc.comment, trc.executed_at, trc.executed_by
+		FROM test_run_cases trc
+		JOIN test_cases tc ON tc.id = trc.case_id
+		WHERE trc.run_id = $1 AND trc.case_id = $2
+	`, runID, caseID).Scan(&details.CaseID, &details.Test, &details.Status, &comment, &executedAt, &executedBy)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
+			return TestRunCaseDetails{}, ErrTestRunCaseNotFound
+		}
+		return TestRunCaseDetails{}, err
+	}
+	if comment.Valid {
+		details.Comment = &comment.String
+	}
+	if executedAt.Valid {
+		t := executedAt.Time
+		details.ExecutedAt = &t
+	}
+	if executedBy.Valid {
+		details.ExecutedBy = &executedBy.String
 	}
 
 	return details, nil

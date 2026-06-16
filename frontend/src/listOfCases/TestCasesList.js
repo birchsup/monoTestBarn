@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './listOfCases.css';
-import '../styles/theme.css';
+import Pagination from '../components/Pagination';
 import { apiGetList, apiPost, apiDelete, errorMessage } from '../api/client';
 
 const PAGE_SIZE = 50;
@@ -91,87 +90,102 @@ const TestCasesList = () => {
         }
     };
 
-    const page = Math.floor(offset / PAGE_SIZE) + 1;
-    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
     return (
-        <div className="test-case-list-container">
-            <h1>Test Cases</h1>
+        <div className="page">
+            <div className="page-header">
+                <h1 className="page-title">Test Cases</h1>
+                <button className="btn btn-primary" onClick={() => navigate('/create')}>
+                    New Test Case
+                </button>
+            </div>
             {error && <p className="error-message" data-test-id="error-message">{error}</p>}
-            <form onSubmit={handleSearch} className="list-toolbar" data-test-id="search-form">
+            <form onSubmit={handleSearch} className="toolbar" data-test-id="search-form">
                 <input
                     type="text"
+                    className="input"
                     placeholder="Search test cases"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     data-test-id="search-input"
                 />
-                <button type="submit" data-test-id="search-button">Search</button>
+                <button type="submit" className="btn btn-secondary" data-test-id="search-button">
+                    Search
+                </button>
                 {selectedIds.length > 0 && (
                     <>
-                        <button type="button" onClick={handleRunSelected} data-test-id="run-selected-button">
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleRunSelected}
+                            data-test-id="run-selected-button"
+                        >
                             Start Run ({selectedIds.length})
                         </button>
-                        <button type="button" onClick={handleDeleteSelected} data-test-id="delete-selected-button">
+                        <button
+                            type="button"
+                            className="btn btn-danger"
+                            onClick={handleDeleteSelected}
+                            data-test-id="delete-selected-button"
+                        >
                             Delete ({selectedIds.length})
                         </button>
                     </>
                 )}
             </form>
             {testCases.length === 0 ? (
-                <p>No test cases available</p>
+                <div className="empty-state">
+                    <p>No test cases available</p>
+                    <button className="btn btn-primary" onClick={() => navigate('/create')}>
+                        Create your first test case
+                    </button>
+                </div>
             ) : (
                 <>
-                    <table className="test-case-list-table">
-                        <thead>
-                        <tr>
-                            <th>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedIds.length === testCases.length && testCases.length > 0}
-                                    onChange={toggleSelectAll}
-                                    data-test-id="select-all-checkbox"
-                                />
-                            </th>
-                            <th>ID</th>
-                            <th>Title</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {testCases.map(testCase => (
-                            <tr
-                                key={testCase.id}
-                                onClick={() => handleRowClick(testCase.id)}
-                                className="clickable-row"
-                            >
-                                <td onClick={(e) => e.stopPropagation()}>
+                    <div className="table-container">
+                        <table className="table">
+                            <thead>
+                            <tr>
+                                <th className="cell-shrink">
                                     <input
                                         type="checkbox"
-                                        checked={selectedIds.includes(testCase.id)}
-                                        onChange={() => toggleSelected(testCase.id)}
+                                        className="checkbox"
+                                        checked={selectedIds.length === testCases.length && testCases.length > 0}
+                                        onChange={toggleSelectAll}
+                                        data-test-id="select-all-checkbox"
                                     />
-                                </td>
-                                <td>{testCase.id}</td>
-                                <td>{testCase.test.name}</td>
+                                </th>
+                                <th className="cell-shrink">ID</th>
+                                <th>Title</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                    <div className="list-pagination" data-test-id="pagination">
-                        <button
-                            disabled={offset === 0}
-                            onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-                        >
-                            Previous
-                        </button>
-                        <span>Page {page} of {totalPages} ({total} total)</span>
-                        <button
-                            disabled={offset + PAGE_SIZE >= total}
-                            onClick={() => setOffset(offset + PAGE_SIZE)}
-                        >
-                            Next
-                        </button>
+                            </thead>
+                            <tbody>
+                            {testCases.map(testCase => (
+                                <tr
+                                    key={testCase.id}
+                                    onClick={() => handleRowClick(testCase.id)}
+                                    className="clickable-row"
+                                >
+                                    <td className="cell-shrink" onClick={(e) => e.stopPropagation()}>
+                                        <input
+                                            type="checkbox"
+                                            className="checkbox"
+                                            checked={selectedIds.includes(testCase.id)}
+                                            onChange={() => toggleSelected(testCase.id)}
+                                        />
+                                    </td>
+                                    <td className="cell-shrink">{testCase.id}</td>
+                                    <td>{testCase.test.name}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
                     </div>
+                    <Pagination
+                        offset={offset}
+                        total={total}
+                        pageSize={PAGE_SIZE}
+                        onOffsetChange={setOffset}
+                    />
                 </>
             )}
         </div>

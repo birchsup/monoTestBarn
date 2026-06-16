@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './TestSuiteDetails.css';
-import '../../styles/theme.css';
 import { apiGet, apiGetList, apiPost, apiPut, apiDelete, errorMessage } from '../../api/client';
 
 const TestSuiteDetails = () => {
@@ -122,15 +121,23 @@ const TestSuiteDetails = () => {
 
     if (notFound) {
         return (
-            <div className="test-suite-details-container">
-                <p>Test suite not found.</p>
-                <button onClick={() => navigate('/test-suites')}>Back to Test Suites</button>
+            <div className="page">
+                <div className="empty-state">
+                    <p>Test suite not found.</p>
+                    <button className="btn btn-secondary" onClick={() => navigate('/test-suites')}>
+                        Back to Test Suites
+                    </button>
+                </div>
             </div>
         );
     }
 
     if (!testSuite) {
-        return error ? <p className="error-message">{error}</p> : <p>Loading...</p>;
+        return (
+            <div className="page">
+                {error ? <p className="error-message">{error}</p> : <p className="loading">Loading...</p>}
+            </div>
+        );
     }
 
     const suiteCases = testSuite.test_cases || [];
@@ -139,104 +146,156 @@ const TestSuiteDetails = () => {
     );
 
     return (
-        <div className="test-suite-details-container">
+        <div className="page">
             {error && <p className="error-message" data-test-id="error-message">{error}</p>}
             {editingInfo ? (
-                <div className="suite-info-edit" data-test-id="suite-info-edit">
-                    <input
-                        type="text"
-                        value={suiteForm.name}
-                        onChange={(e) => setSuiteForm({ ...suiteForm, name: e.target.value })}
-                        data-test-id="suite-name-input"
-                    />
-                    <textarea
-                        value={suiteForm.description}
-                        onChange={(e) => setSuiteForm({ ...suiteForm, description: e.target.value })}
-                        data-test-id="suite-description-input"
-                    />
-                    <button onClick={handleSaveSuiteInfo} data-test-id="suite-info-save">Save</button>
-                    <button onClick={() => {
-                        setSuiteForm({ name: testSuite.name, description: testSuite.description || '' });
-                        setEditingInfo(false);
-                    }}>
-                        Cancel
-                    </button>
+                <div className="card suite-info-edit" data-test-id="suite-info-edit">
+                    <div className="form-field">
+                        <label className="form-label">Name</label>
+                        <input
+                            type="text"
+                            className="input"
+                            value={suiteForm.name}
+                            onChange={(e) => setSuiteForm({ ...suiteForm, name: e.target.value })}
+                            data-test-id="suite-name-input"
+                        />
+                    </div>
+                    <div className="form-field">
+                        <label className="form-label">Description</label>
+                        <textarea
+                            className="textarea"
+                            value={suiteForm.description}
+                            onChange={(e) => setSuiteForm({ ...suiteForm, description: e.target.value })}
+                            data-test-id="suite-description-input"
+                        />
+                    </div>
+                    <div className="suite-actions">
+                        <button className="btn btn-primary" onClick={handleSaveSuiteInfo} data-test-id="suite-info-save">
+                            Save
+                        </button>
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => {
+                                setSuiteForm({ name: testSuite.name, description: testSuite.description || '' });
+                                setEditingInfo(false);
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             ) : (
-                <>
-                    <h1>{testSuite.name}</h1>
-                    <p>{testSuite.description}</p>
-                    <button onClick={() => setEditingInfo(true)} data-test-id="suite-info-edit-button">
-                        Edit Suite Info
-                    </button>
-                </>
-            )}
-            <button onClick={handleStartRun} data-test-id="start-run-button" disabled={suiteCases.length === 0}>
-                Start Test Run
-            </button>
-            <button onClick={() => setEditMode(!editMode)}>
-                {editMode ? 'Done' : 'Edit'}
-            </button>
-            <table className="test-cases-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        {editMode && <th>Actions</th>}
-                    </tr>
-                </thead>
-                <tbody>
-                    {suiteCases.map(testCase => (
-                        <tr
-                            key={testCase.id}
-                            onClick={() => !editMode && handleRowClick(testCase.id)}
-                            className={!editMode ? 'clickable-row' : ''}
+                <div className="page-header">
+                    <div>
+                        <h1 className="page-title">{testSuite.name}</h1>
+                        {testSuite.description && (
+                            <p className="page-subtitle">{testSuite.description}</p>
+                        )}
+                    </div>
+                    <div className="suite-actions">
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => setEditingInfo(true)}
+                            data-test-id="suite-info-edit-button"
                         >
-                            <td>{testCase.id}</td>
-                            <td>{testCase.test.name}</td>
-                            {editMode && (
-                                <td>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteTestCase(testSuite.id, testCase.id);
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            )}
-                        </tr>
-                    ))}
-                    {editMode && (
+                            Edit Suite Info
+                        </button>
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => setEditMode(!editMode)}
+                        >
+                            {editMode ? 'Done' : 'Edit Cases'}
+                        </button>
+                        <button
+                            className="btn btn-primary"
+                            onClick={handleStartRun}
+                            data-test-id="start-run-button"
+                            disabled={suiteCases.length === 0}
+                        >
+                            Start Test Run
+                        </button>
+                    </div>
+                </div>
+            )}
+            <div className="table-container">
+                <table className="table">
+                    <thead>
                         <tr>
-                            <td colSpan="3">
-                                <input
-                                    type="text"
-                                    placeholder="Search or create new test case"
-                                    value={searchQuery}
-                                    onChange={e => setSearchQuery(e.target.value)}
-                                />
-                                <ul>
-                                    {filteredTestCases.map(testCase => (
-                                        <li key={testCase.id}>
-                                            {testCase.test.name}
-                                            <button onClick={() => handleAddTestCase(testSuite.id, testCase.id)}>
-                                                Add
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                                {searchQuery && filteredTestCases.length === 0 && (
-                                    <button onClick={() => handleCreateAndAddTestCase(testSuite.id, searchQuery)}>
-                                        Create and Add New Test Case
-                                    </button>
-                                )}
-                            </td>
+                            <th className="cell-shrink">ID</th>
+                            <th>Name</th>
+                            {editMode && <th>Actions</th>}
                         </tr>
-                    )}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {suiteCases.map(testCase => (
+                            <tr
+                                key={testCase.id}
+                                onClick={() => !editMode && handleRowClick(testCase.id)}
+                                className={!editMode ? 'clickable-row' : ''}
+                            >
+                                <td className="cell-shrink">{testCase.id}</td>
+                                <td>{testCase.test.name}</td>
+                                {editMode && (
+                                    <td>
+                                        <button
+                                            className="btn btn-danger btn-sm"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteTestCase(testSuite.id, testCase.id);
+                                            }}
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                )}
+                            </tr>
+                        ))}
+                        {!editMode && suiteCases.length === 0 && (
+                            <tr>
+                                <td colSpan="2" className="suite-empty-cell">
+                                    No test cases in this suite yet. Click "Edit Cases" to add some.
+                                </td>
+                            </tr>
+                        )}
+                        {editMode && (
+                            <tr>
+                                <td colSpan="3">
+                                    <div className="suite-case-picker">
+                                        <input
+                                            type="text"
+                                            className="input"
+                                            placeholder="Search or create new test case"
+                                            value={searchQuery}
+                                            onChange={e => setSearchQuery(e.target.value)}
+                                        />
+                                        <ul className="suite-case-options">
+                                            {filteredTestCases.map(testCase => (
+                                                <li key={testCase.id}>
+                                                    <span>{testCase.test.name}</span>
+                                                    <button
+                                                        className="btn btn-secondary btn-sm"
+                                                        onClick={() => handleAddTestCase(testSuite.id, testCase.id)}
+                                                    >
+                                                        Add
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        {searchQuery && filteredTestCases.length === 0 && (
+                                            <button
+                                                className="btn btn-primary btn-sm"
+                                                onClick={() => handleCreateAndAddTestCase(testSuite.id, searchQuery)}
+                                            >
+                                                Create and Add New Test Case
+                                            </button>
+                                        )}
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

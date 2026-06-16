@@ -49,6 +49,7 @@ func main() {
 	r.HandleFunc("/test-runs", api.GetAllTestRunsHandler).Methods("GET")
 	r.HandleFunc("/test-runs/{id}", api.GetTestRunByIDHandler).Methods("GET")
 	r.HandleFunc("/test-runs/{runId}/cases:batch", api.BatchUpdateRunCaseStatusHandler).Methods("PATCH")
+	r.HandleFunc("/test-runs/{runId}/cases/{caseId}", api.GetTestRunCaseHandler).Methods("GET")
 	r.HandleFunc("/test-runs/{runId}/cases/{caseId}", api.UpdateTestRunCaseStatusHandler).Methods("PATCH")
 
 	//test suites

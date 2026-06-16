@@ -1,52 +1,53 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Header.css';
-import '../styles/theme.css';
-import logo from '../assets/logo.webp'; // Убедитесь, что путь к логотипу правильный
+import logo from '../assets/logo.webp';
 
 const Header = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const isActive = (path) => location.pathname === path;
+    // Section prefix match so detail pages (e.g. /test-runs/2) keep their tab lit.
+    const isActive = (path) => location.pathname.startsWith(path);
 
     return (
-        <header className="app-header"
-                data-test-id="app-header">
+        <header className="app-header" data-test-id="app-header">
             <div className="header-logo" onClick={() => navigate('/')}>
-                <img src={logo} alt="TestBarn Logo" className="logo-image" />
-                TestBarn
+                <img src={logo} alt="TestBarn Logo" className="header-logo-image" />
+                <span className="header-brand">
+                    Test<span className="header-brand-accent">Barn</span>
+                </span>
             </div>
             <nav className="header-nav">
                 <button
-                    className={`header-button ${isActive('/testcases') ? 'active' : ''}`}
+                    className={`nav-link ${isActive('/testcases') ? 'active' : ''}`}
                     onClick={() => navigate('/testcases')}
                     data-test-id="button-allTests"
                 >
-                    All Tests
+                    Test Cases
                 </button>
                 <button
-                    className={`header-button ${isActive('/create') ? 'active' : ''}`}
-                    onClick={() => navigate('/create')}
-                    data-test-id="button-create"
-                >
-                    Create Test Case
-                </button>
-                <button
-                    className={`header-button ${isActive('/test-suites') ? 'active' : ''}`}
+                    className={`nav-link ${isActive('/test-suites') ? 'active' : ''}`}
                     onClick={() => navigate('/test-suites')}
                     data-test-id="button-test-suites"
                 >
-                    List Of Test Suites
+                    Test Suites
                 </button>
                 <button
-                    className={`header-button ${isActive('/test-runs') ? 'active' : ''}`}
+                    className={`nav-link ${isActive('/test-runs') ? 'active' : ''}`}
                     onClick={() => navigate('/test-runs')}
                     data-test-id="button-createTestRun"
                 >
                     Test Runs
                 </button>
             </nav>
+            <button
+                className="btn btn-primary btn-sm header-action"
+                onClick={() => navigate('/create')}
+                data-test-id="button-create"
+            >
+                New Test Case
+            </button>
         </header>
     );
 };

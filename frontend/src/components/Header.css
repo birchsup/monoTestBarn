@@ -1,68 +1,100 @@
 .app-header {
     display: flex;
     align-items: center;
-    padding: 10px 20px;
-    background-color: var(--color-header-bg);
-    color: var(--color-surface);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
+    gap: var(--space-6);
+    min-height: var(--header-height);
+    padding: var(--space-3) var(--space-6);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    /* A thin frog-green underline gives the bar presence on the dark canvas. */
+    box-shadow: inset 0 -2px 0 var(--color-primary), var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .header-logo {
     display: flex;
     align-items: center;
-    font-size: 1.5em;
-    font-weight: bold;
+    gap: var(--space-3);
     cursor: pointer;
-    margin-right: 30px; /* Увеличено расстояние для улучшения читаемости */
+    white-space: nowrap;
 }
 
-.logo-image {
-    height: 40px; /* Установите нужный размер логотипа */
-    margin-right: 10px;
+.header-logo-image {
+    height: 40px;
+    width: auto;
+    /* Lift the frog off the dark bar. */
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+}
+
+.header-brand {
+    font-family: var(--font-brand);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--color-text);
+    line-height: 1;
+}
+
+.header-brand-accent {
+    color: var(--color-primary);
 }
 
 .header-nav {
     display: flex;
-    gap: 15px; /* Увеличено расстояние между кнопками */
+    align-items: stretch;
+    gap: var(--space-1);
+    flex: 1;
+    align-self: stretch;
 }
 
-.header-button {
-    background-color: var(--color-header-bg);
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-4);
+    font-family: inherit;
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--color-text-muted);
+    background: transparent;
     border: none;
-    color: var(--color-surface);
-    padding: 10px 20px;
-    min-width: 160px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 1em;
+    /* Reserve the active underline so links don't shift on selection. */
+    border-bottom: 2px solid transparent;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
     cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.15s ease, color 0.15s ease,
+        border-color 0.15s ease;
     white-space: nowrap;
 }
 
-.header-button:hover {
-    background-color: var(--color-header-hover);
+.nav-link:hover {
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+}
+
+/* "You are here": green text, soft fill and a solid green underline tab. */
+.nav-link.active {
     color: var(--color-primary);
+    background: var(--color-primary-soft);
+    border-bottom-color: var(--color-primary);
+    font-weight: 600;
 }
 
-.header-button.active {
-    /*color: #2ff1f8; !* Цвет текста для активной кнопки *!*/
-    position: relative;
+.header-action {
+    margin-left: auto;
 }
 
-.header-button.active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: var(--color-primary);
+@media (max-width: 768px) {
+    .app-header {
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        padding: var(--space-2) var(--space-4);
+    }
+
+    .header-nav {
+        order: 3;
+        flex: 1 1 100%;
+        overflow-x: auto;
+    }
 }

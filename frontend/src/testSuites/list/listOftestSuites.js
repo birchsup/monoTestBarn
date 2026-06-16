@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import "./listOfTestsSuites.css"
-import '../../styles/theme.css'
+import Pagination from '../../components/Pagination';
 import { apiGetList, apiDelete, errorMessage } from '../../api/client';
 
 const PAGE_SIZE = 50;
@@ -63,77 +62,80 @@ const TestSuitesList = () => {
         }
     };
 
-    const page = Math.floor(offset / PAGE_SIZE) + 1;
-    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
     return (
-        <div className="test-suites-list-container">
-            <h1>Test Suites</h1>
+        <div className="page">
+            <div className="page-header">
+                <h1 className="page-title">Test Suites</h1>
+                <button className="btn btn-primary" onClick={() => navigate('/add-test-suite')}>
+                    New Test Suite
+                </button>
+            </div>
             {error && <p className="error-message" data-test-id="error-message">{error}</p>}
-            <form onSubmit={handleSearch} className="list-toolbar" data-test-id="search-form">
+            <form onSubmit={handleSearch} className="toolbar" data-test-id="search-form">
                 <input
                     type="text"
+                    className="input"
                     placeholder="Search by name"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     data-test-id="search-input"
                 />
-                <button type="submit" data-test-id="search-button">Search</button>
+                <button type="submit" className="btn btn-secondary" data-test-id="search-button">
+                    Search
+                </button>
             </form>
             {testSuites.length === 0 ? (
-                <p>No test suites available</p>
+                <div className="empty-state">
+                    <p>No test suites available</p>
+                    <button className="btn btn-primary" onClick={() => navigate('/add-test-suite')}>
+                        Create your first test suite
+                    </button>
+                </div>
             ) : (
                 <>
-                    <table className="test-suites-list-table">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {testSuites.map(testSuite => (
-                            <tr
-                                key={testSuite.id}
-                                onClick={() => handleRowClick(testSuite.id)}
-                                className="test-suites-list-row"
-                            >
-                                <td>{testSuite.id}</td>
-                                <td>{testSuite.name}</td>
-                                <td>
-                                    <button
-                                        className="btn btn-danger"
-                                        onClick={(e) => handleDelete(e, testSuite.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
+                    <div className="table-container">
+                        <table className="table">
+                            <thead>
+                            <tr>
+                                <th className="cell-shrink">ID</th>
+                                <th>Name</th>
+                                <th className="cell-shrink">Actions</th>
                             </tr>
-                        ))}
-                        <tr
-                            onClick={() => navigate('/add-test-suite')}
-                            className="test-suites-list-row placeholder-row"
-                        >
-                            <td colSpan="3">+ Add New Test Suite</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <div className="list-pagination" data-test-id="pagination">
-                        <button
-                            disabled={offset === 0}
-                            onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-                        >
-                            Previous
-                        </button>
-                        <span>Page {page} of {totalPages} ({total} total)</span>
-                        <button
-                            disabled={offset + PAGE_SIZE >= total}
-                            onClick={() => setOffset(offset + PAGE_SIZE)}
-                        >
-                            Next
-                        </button>
+                            </thead>
+                            <tbody>
+                            {testSuites.map(testSuite => (
+                                <tr
+                                    key={testSuite.id}
+                                    onClick={() => handleRowClick(testSuite.id)}
+                                    className="clickable-row"
+                                >
+                                    <td className="cell-shrink">{testSuite.id}</td>
+                                    <td>{testSuite.name}</td>
+                                    <td>
+                                        <button
+                                            className="btn btn-danger btn-sm"
+                                            onClick={(e) => handleDelete(e, testSuite.id)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                            <tr
+                                onClick={() => navigate('/add-test-suite')}
+                                className="clickable-row action-row"
+                            >
+                                <td colSpan="3">+ Add New Test Suite</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
+                    <Pagination
+                        offset={offset}
+                        total={total}
+                        pageSize={PAGE_SIZE}
+                        onOffsetChange={setOffset}
+                    />
                 </>
             )}
         </div>

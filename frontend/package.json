@@ -7,6 +7,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:unit": "vitest",
+    "test:unit:run": "vitest run",
     "eject": "react-scripts eject"
   },
   "author": "Dmitrii Sadovnikov",
@@ -18,6 +20,14 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.24.1",
     "react-scripts": "5.0.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@testing-library/user-event": "^14.5.2",
+    "esbuild": "^0.25.0",
+    "jsdom": "^24.0.0",
+    "vitest": "^1.4.0"
   },
   "eslintConfig": {
     "extends": [

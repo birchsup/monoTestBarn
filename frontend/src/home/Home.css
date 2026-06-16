@@ -1,5 +1,27 @@
-.home {
+.home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-4);
+}
+
+.home-card {
     display: flex;
-    color: var(--color-header-hover);
-    text-align: center;
+    flex-direction: column;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.home-card:hover {
+    border-color: var(--color-primary);
+}
+
+.home-card-description {
+    margin: 0 0 var(--space-4);
+    color: var(--color-text-muted);
+    flex: 1;
+}
+
+.home-card-link {
+    color: var(--color-primary);
+    font-weight: 500;
 }

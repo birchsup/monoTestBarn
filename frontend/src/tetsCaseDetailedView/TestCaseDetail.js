@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './TestCaseDetail.css';
-import '../styles/theme.css';
+import Select from '../components/Select';
 import { apiGet, apiGetList, apiPut, apiPost, apiDelete, errorMessage } from '../api/client';
 
 // suite_id/suite_name are serialized as sql.Null* objects ({Int64, Valid}/{String, Valid}).
@@ -148,144 +148,173 @@ const TestCaseDetail = () => {
 
     if (notFound) {
         return (
-            <div className="test-case-container">
-                <p>Test case not found.</p>
-                <button className="button button-secondary" onClick={() => navigate('/testcases')}>
-                    Back to Test Cases
-                </button>
+            <div className="page">
+                <div className="empty-state">
+                    <p>Test case not found.</p>
+                    <button className="btn btn-secondary" onClick={() => navigate('/testcases')}>
+                        Back to Test Cases
+                    </button>
+                </div>
             </div>
         );
     }
 
     if (!testCase) {
-        return error ? <p className="error-message">{error}</p> : <p>Loading...</p>;
+        return (
+            <div className="page">
+                {error ? <p className="error-message">{error}</p> : <p className="loading">Loading...</p>}
+            </div>
+        );
     }
 
     return (
-        <div className="test-case-container" data-test-id="test-case-container">
-            <div className="test-case-detail-view">
-                {error && <p className="error-message" data-test-id="error-message">{error}</p>}
-                {editMode ? (
-                    <>
-                        <textarea
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            className="editable-textarea"
-                            rows="1"
-                        />
-                        <div>
-                            <strong data-test-id="preconditions">Preconditions:</strong>
-                            <textarea
-                                name="preconditions"
-                                value={formData.preconditions}
-                                onChange={handleInputChange}
-                                className="editable-textarea"
-                                rows="1"
-                                data-test-id="edit-preconditions"
-                            />
-                        </div>
-                        <table className="test-case-table">
-                            <thead>
-                            <tr>
-                                <th>Step Number</th>
-                                <th>Action</th>
-                                <th>Expected Result</th>
-                                <th>Delete</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {formData.steps.map((step, index) => (
-                                <tr key={index}>
-                                    <td>{step.step}</td>
-                                    <td>
-                                            <textarea
-                                                name="action"
-                                                value={step.action}
-                                                onChange={(e) => handleStepChange(index, e)}
-                                                className="editable-textarea"
-                                                rows="1"
-                                            />
-                                    </td>
-                                    <td>
-                                            <textarea
-                                                name="expected_result"
-                                                value={step.expected_result}
-                                                onChange={(e) => handleStepChange(index, e)}
-                                                className="editable-textarea"
-                                                rows="1"
-                                            />
-                                    </td>
-                                    <td>
-                                        <button type="button" onClick={() => deleteStep(index)} className="button delete-step-button">Delete</button>
-                                    </td>
-                                </tr>
-                            ))}
-                            <tr>
-                                <td colSpan="4">
-                                    <button type="button" onClick={addStep} className="button add-step-button2">Add Step</button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <button onClick={handleSubmit} className="button button-primary">Save</button>
-                        <button onClick={handleCancel} className="button button-secondary">Cancel</button>
-                    </>
-                ) : (
-                    <>
-                        <h1 className="test-case-title">{testCase.test.name}</h1>
-                        <div><strong>Preconditions:</strong> {testCase.test.preconditions}</div>
-                        <table className="test-case-table">
-                            <thead>
-                            <tr>
-                                <th>Step Number</th>
-                                <th>Action</th>
-                                <th>Expected Result</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {(testCase.test.steps || []).map(step => (
-                                <tr key={step.step}>
-                                    <td>{step.step}</td>
-                                    <td>{step.action}</td>
-                                    <td>{step.expected_result}</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                        <button className="edit-button" data-test-id="edit-button" onClick={() => setEditMode(true)}>Edit</button>
-                        <button className="button button-secondary" data-test-id="delete-button" onClick={handleDelete}>Delete</button>
-                    </>
-                )}
-            </div>
-            <div className="test-case-meta">
-                <div className="meta-item"><strong>Created by:</strong> {testCase.test.created_by}</div>
-                <div className="meta-item"><strong>Is automated:</strong> {testCase.test.isAutomated ? 'Yes' : 'No'}
-                </div>
-                <div className="meta-item"><strong>Priority:</strong> {testCase.test.priority}</div>
-                <div className="meta-item">
-                    <label><strong>Test Suite:</strong></label>
-                    <div className="select-container">
-                        {editMode ? (
-                            <>
-                                <select
-                                    name="suite_id"
-                                    value={formData.suite_id}
-                                    onChange={(e) => handleAddToSuite(e.target.value)}
-                                >
-                                    <option value="" disabled hidden>Select Test Suite</option>
-                                    {testSuites.map(suite => (
-                                        <option key={suite.id} value={suite.id}>
-                                            {suite.name}
-                                        </option>
+        <div className="page" data-test-id="test-case-container">
+            {error && <p className="error-message" data-test-id="error-message">{error}</p>}
+            <div className="detail-layout">
+                <div className="card detail-main">
+                    {editMode ? (
+                        <>
+                            <div className="form-field">
+                                <label className="form-label">Name</label>
+                                <textarea
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    className="textarea editable-textarea"
+                                    rows="1"
+                                />
+                            </div>
+                            <div className="form-field">
+                                <label className="form-label" data-test-id="preconditions">Preconditions</label>
+                                <textarea
+                                    name="preconditions"
+                                    value={formData.preconditions}
+                                    onChange={handleInputChange}
+                                    className="textarea editable-textarea"
+                                    rows="1"
+                                    data-test-id="edit-preconditions"
+                                />
+                            </div>
+                            <div className="table-container detail-steps">
+                                <table className="table">
+                                    <thead>
+                                    <tr>
+                                        <th className="cell-shrink">#</th>
+                                        <th>Action</th>
+                                        <th>Expected Result</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {formData.steps.map((step, index) => (
+                                        <tr key={index}>
+                                            <td className="cell-shrink">{step.step}</td>
+                                            <td>
+                                                <textarea
+                                                    name="action"
+                                                    value={step.action}
+                                                    onChange={(e) => handleStepChange(index, e)}
+                                                    className="textarea editable-textarea"
+                                                    rows="1"
+                                                />
+                                            </td>
+                                            <td>
+                                                <textarea
+                                                    name="expected_result"
+                                                    value={step.expected_result}
+                                                    onChange={(e) => handleStepChange(index, e)}
+                                                    className="textarea editable-textarea"
+                                                    rows="1"
+                                                />
+                                            </td>
+                                            <td>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => deleteStep(index)}
+                                                    className="btn btn-danger btn-sm"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
                                     ))}
-                                </select>
-                            </>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="detail-actions">
+                                <button type="button" onClick={addStep} className="btn btn-secondary">
+                                    Add Step
+                                </button>
+                                <button onClick={handleSubmit} className="btn btn-primary">Save</button>
+                                <button onClick={handleCancel} className="btn btn-secondary">Cancel</button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <h1 className="detail-title">{testCase.test.name}</h1>
+                            <p className="detail-preconditions">
+                                <span className="form-label">Preconditions</span>
+                                {testCase.test.preconditions || '—'}
+                            </p>
+                            <div className="table-container detail-steps">
+                                <table className="table">
+                                    <thead>
+                                    <tr>
+                                        <th className="cell-shrink">#</th>
+                                        <th>Action</th>
+                                        <th>Expected Result</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {(testCase.test.steps || []).map(step => (
+                                        <tr key={step.step}>
+                                            <td className="cell-shrink">{step.step}</td>
+                                            <td>{step.action}</td>
+                                            <td>{step.expected_result}</td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="detail-actions">
+                                <button className="btn btn-primary" data-test-id="edit-button" onClick={() => setEditMode(true)}>
+                                    Edit
+                                </button>
+                                <button className="btn btn-danger" data-test-id="delete-button" onClick={handleDelete}>
+                                    Delete
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </div>
+                <aside className="card detail-sidebar">
+                    <div className="meta-item">
+                        <span className="form-label">Created by</span>
+                        <span>{testCase.test.created_by || '—'}</span>
+                    </div>
+                    <div className="meta-item">
+                        <span className="form-label">Is automated</span>
+                        <span>{testCase.test.isAutomated ? 'Yes' : 'No'}</span>
+                    </div>
+                    <div className="meta-item">
+                        <span className="form-label">Priority</span>
+                        <span>{testCase.test.priority || '—'}</span>
+                    </div>
+                    <div className="meta-item">
+                        <span className="form-label">Test Suite</span>
+                        {editMode ? (
+                            <Select
+                                placeholder="Select Test Suite"
+                                value={formData.suite_id}
+                                onChange={(value) => handleAddToSuite(value)}
+                                options={testSuites.map(suite => ({ value: suite.id, label: suite.name }))}
+                                data-test-id="select-suite"
+                            />
                         ) : (
                             <span>{formData.suite_name || 'None'}</span>
                         )}
                     </div>
-                </div>
+                </aside>
             </div>
         </div>
     );

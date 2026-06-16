@@ -238,6 +238,18 @@ type TestRunResponse struct {
 	CreatedAt time.Time              `json:"created_at"`
 }
 
+type TestRunCaseDetailsResponse struct {
+	RunID      int             `json:"run_id"`
+	SuiteID    *int            `json:"suite_id,omitempty"`
+	RunDetails json.RawMessage `json:"run_details"`
+	CaseID     int64           `json:"case_id"`
+	Test       json.RawMessage `json:"test"`
+	Status     string          `json:"status"`
+	Comment    *string         `json:"comment,omitempty"`
+	ExecutedAt *time.Time      `json:"executed_at,omitempty"`
+	ExecutedBy *string         `json:"executed_by,omitempty"`
+}
+
 type APIErrorResponse struct {
 	Code    string                 `json:"code"`
 	Message string                 `json:"message"`
@@ -457,6 +469,7 @@ func TestCreateListGetAndPatchTestRuns(t *testing.T) {
 	r.HandleFunc("/test-runs", api.CreateTestRunHandler).Methods("POST")
 	r.HandleFunc("/test-runs", api.GetAllTestRunsHandler).Methods("GET")
 	r.HandleFunc("/test-runs/{id}", api.GetTestRunByIDHandler).Methods("GET")
+	r.HandleFunc("/test-runs/{runId}/cases/{caseId}", api.GetTestRunCaseHandler).Methods("GET")
 	r.HandleFunc("/test-runs/{runId}/cases/{caseId}", api.UpdateTestRunCaseStatusHandler).Methods("PATCH")
 	api.ConfigureRouter(r)
 
@@ -588,6 +601,32 @@ func TestCreateListGetAndPatchTestRuns(t *testing.T) {
 	assert.Equal(t, 1, patchedRun.Summary.Passed)
 	assert.Equal(t, 1, patchedRun.Summary.NotRun)
 
+	getCaseResp, err := http.Get(fmt.Sprintf("%s/test-runs/%d/cases/%d", server.URL, createdRun.ID, targetCaseID))
+	if err != nil {
+		t.Fatalf("Failed to get run case by id: %v", err)
+	}
+	defer func() { _ = getCaseResp.Body.Close() }()
+	assert.Equal(t, http.StatusOK, getCaseResp.StatusCode)
+
+	var fetchedCase TestRunCaseDetailsResponse
+	if err := json.NewDecoder(getCaseResp.Body).Decode(&fetchedCase); err != nil {
+		t.Fatalf("Failed to decode fetched run case: %v", err)
+	}
+	assert.Equal(t, createdRun.ID, fetchedCase.RunID)
+	assert.Equal(t, targetCaseID, fetchedCase.CaseID)
+	assert.Equal(t, "passed", fetchedCase.Status)
+	assert.NotNil(t, fetchedCase.Comment)
+	assert.NotNil(t, fetchedCase.ExecutedAt)
+	assert.NotEmpty(t, fetchedCase.Test, "case content must be embedded")
+	assert.NotEmpty(t, fetchedCase.RunDetails, "run details must be embedded for breadcrumbs")
+
+	getMissingCaseResp, err := http.Get(fmt.Sprintf("%s/test-runs/%d/cases/9999999", server.URL, createdRun.ID))
+	if err != nil {
+		t.Fatalf("Failed to get missing run case: %v", err)
+	}
+	defer func() { _ = getMissingCaseResp.Body.Close() }()
+	assertJSONErrorResponse(t, getMissingCaseResp, http.StatusNotFound, "test_run_case_not_found", "test run case not found")
+
 	getSuiteResp, err := http.Get(fmt.Sprintf("%s/test-suites/%d", server.URL, createdSuite.ID))
 	if err != nil {
 		t.Fatalf("Failed to get suite by id: %v", err)
@@ -629,6 +668,7 @@ func TestTestRunContractErrors(t *testing.T) {
 	r := mux.NewRouter()
 	r.HandleFunc("/test-runs", api.CreateTestRunHandler).Methods("POST")
 	r.HandleFunc("/test-runs/{id}", api.GetTestRunByIDHandler).Methods("GET")
+	r.HandleFunc("/test-runs/{runId}/cases/{caseId}", api.GetTestRunCaseHandler).Methods("GET")
 	r.HandleFunc("/test-runs/{runId}/cases/{caseId}", api.UpdateTestRunCaseStatusHandler).Methods("PATCH")
 	api.ConfigureRouter(r)
 
@@ -672,6 +712,24 @@ func TestTestRunContractErrors(t *testing.T) {
 		resp, err := http.Get(server.URL + "/test-runs/9999999")
 		if err != nil {
 			t.Fatalf("Failed to get run: %v", err)
+		}
+		defer func() { _ = resp.Body.Close() }()
+		assertJSONErrorResponse(t, resp, http.StatusNotFound, "test_run_not_found", "test run not found")
+	})
+
+	t.Run("get run case with invalid case id", func(t *testing.T) {
+		resp, err := http.Get(server.URL + "/test-runs/1/cases/not-a-number")
+		if err != nil {
+			t.Fatalf("Failed to get run case: %v", err)
+		}
+		defer func() { _ = resp.Body.Close() }()
+		assertJSONErrorResponse(t, resp, http.StatusBadRequest, "invalid_path_param", "Invalid case ID")
+	})
+
+	t.Run("get run case from non-existing run", func(t *testing.T) {
+		resp, err := http.Get(server.URL + "/test-runs/9999999/cases/1")
+		if err != nil {
+			t.Fatalf("Failed to get run case: %v", err)
 		}
 		defer func() { _ = resp.Body.Close() }()
 		assertJSONErrorResponse(t, resp, http.StatusNotFound, "test_run_not_found", "test run not found")

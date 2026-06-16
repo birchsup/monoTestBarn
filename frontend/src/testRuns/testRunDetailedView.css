@@ -1,144 +1,674 @@
-.test-run-list-container {
-    padding: 20px;
-    background-color: var(--color-background);
-    color: var(--color-surface);
-    font-family: var(--font-base);
+/* ---------- Compact run summary bar ---------- */
+
+/* Low, sticky orientation strip: counters + progress, no big chart. Sticks just
+   below the global header so the working split-view stays in view while scrolling. */
+.run-summary-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    padding: var(--space-2) var(--space-4);
+    margin-bottom: var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    position: sticky;
+    top: var(--header-height);
+    z-index: 5;
 }
 
-.test-run-list-container h1 {
-    color: var(--color-surface);
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 24px;
+.run-summary-chips {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
 }
 
-.test-suite-container {
+/* Chips double as status filters — they look and behave like toggle buttons. */
+.summary-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 3px var(--space-3);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    background: var(--color-surface-muted);
+    color: var(--color-text-muted);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.summary-chip:hover {
+    border-color: currentColor;
+}
+
+.summary-chip.active {
+    box-shadow: inset 0 0 0 1px currentColor;
+    border-color: currentColor;
+}
+
+.summary-chip-count {
+    font-weight: 700;
+}
+
+.summary-chip.passed { color: var(--status-passed); background: var(--status-passed-soft); }
+.summary-chip.failed { color: var(--status-failed); background: var(--status-failed-soft); }
+.summary-chip.blocked { color: var(--status-blocked); background: var(--status-blocked-soft); }
+.summary-chip.skipped { color: var(--status-skipped); background: var(--status-skipped-soft); }
+
+.chip-clear {
+    padding: 0 var(--space-2);
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: var(--text-sm);
+    color: var(--color-primary);
+    cursor: pointer;
+}
+
+.chip-clear:hover {
+    text-decoration: underline;
+}
+
+.run-progress {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--space-1);
+    flex: 0 1 280px;
+    min-width: 180px;
+    margin-left: auto;
 }
 
-.test-suite-block {
-    background-color: var(--color-background);
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.test-suite-block h2 {
-    color: var(--color-surface);
-    margin-bottom: 10px;
-    font-size: 20px;
-}
-
-.test-run-list-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: var(--color-header-hover);
-    color: var(--color-surface);
-    border-radius: 8px;
+/* Segmented progress: proportional coloured slices over a muted "remaining" track. */
+.run-progress-track {
+    display: flex;
+    height: 8px;
+    background: var(--color-surface-muted);
+    border-radius: 999px;
     overflow: hidden;
 }
 
-.test-run-list-table th,
-.test-run-list-table td {
-    border: 1px solid var(--color-border-dark);
-    padding: 12px;
-    text-align: center;
+.run-progress-seg {
+    height: 100%;
+    transition: width 0.2s ease;
 }
 
-.test-run-list-table th {
-    background-color: var(--color-header-hover);
-    font-weight: bold;
-    text-transform: uppercase;
+.run-progress-seg.passed { background: var(--status-passed); }
+.run-progress-seg.failed { background: var(--status-failed); }
+.run-progress-seg.blocked { background: var(--status-blocked); }
+.run-progress-seg.skipped { background: var(--status-skipped); }
+
+.run-progress-text {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
 }
 
-.test-run-list-table tr:nth-child(even) {
-    background-color: var(--color-background);
+.bulk-status {
+    margin-bottom: var(--space-3);
 }
 
-.test-run-list-table tr:hover {
-    background-color: var(--color-header-hover);
+/* Compact selects (table row "Change", filter, bulk). */
+.select-sm {
+    width: auto;
+    min-width: 0;
+    padding: var(--space-1) var(--space-6) var(--space-1) var(--space-2);
+    font-size: var(--text-sm);
 }
 
-/* Колонка Status: Выровнена по центру */
-.test-run-list-table td.status-column {
+.toolbar .select-sm {
+    width: auto;
+    min-width: 0;
+}
+
+
+/* ---------- Split layout: list left, inspector right ---------- */
+
+.run-detail-layout {
     display: flex;
+    align-items: flex-start;
+    gap: var(--space-5);
+}
+
+/* The list is the secondary surface; the inspector is the work area. */
+.run-detail-layout .table-container {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 720px;
+}
+
+/* Expanded ("fullscreen") mode: hide the list, give the inspector the width. */
+.run-detail-layout.expanded .table-container {
+    display: none;
+}
+
+.run-detail-layout.expanded .run-case-panel {
+    flex: 1 1 auto;
+}
+
+/* Action dropdown reads as a control, distinct from the read-only Status badge. */
+.change-select {
+    color: var(--color-text-muted);
+}
+
+.change-select:hover {
+    border-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+/* Default (no selection) view: a hint fills the inspector's slot. */
+.run-case-placeholder {
+    flex: 0 0 720px;
+    align-self: stretch;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: var(--space-2);
+    padding: var(--space-6);
     text-align: center;
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.run-case-placeholder-title {
+    margin: 0;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.run-case-placeholder p {
+    margin: 0;
+}
+
+/* Case name rendered as a link-styled button that opens the inspector in place. */
+.link-button {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: var(--color-primary);
+    cursor: pointer;
+    text-align: left;
+}
+
+.link-button:hover {
+    text-decoration: underline;
+}
+
+.link-button:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Selected row stays neutral + a thin accent bar tying it to the open panel. */
+.table tr.row-active {
+    background: var(--color-surface-muted);
+}
+
+.table tr.row-active td:first-child {
+    box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+/* ---------- Run-case inspector panel ---------- */
+
+/* A real work area: ~720px wide, near full viewport height, with a sticky header
+   and a sticky result bar bracketing a single scrolling content column. */
+.run-case-panel {
+    flex: 0 0 720px;
+    align-self: flex-start;
+    position: sticky;
+    top: calc(var(--header-height) + 56px);
+    height: calc(100vh - var(--header-height) - 56px - var(--space-4));
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    border-top: 3px solid var(--color-primary);
+}
+
+/* Sticky header — context stays put while the content scrolls. */
+.rc-header {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.rc-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.rc-nav-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.rc-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+/* Compact icon buttons — no heavy divider/column around close. */
+.rc-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: var(--text-md);
+    line-height: 1;
+}
+
+.rc-icon-btn:hover {
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+}
+
+/* Title: readable but capped at 3 lines; full text via tooltip. */
+.rc-title {
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+.rc-meta-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.rc-case-id {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-primary);
+    letter-spacing: 0.02em;
+}
+
+/* "Open in Test Cases" sits with the case attributes, pushed to the right edge. */
+.rc-open-link {
+    margin-left: auto;
+    font-size: var(--text-sm);
+    color: var(--color-primary);
+    text-decoration: none;
     white-space: nowrap;
 }
 
-/* Индикаторы статусов */
-.status-indicator {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
+.rc-open-link:hover {
+    text-decoration: underline;
+}
+
+/* Run-details meta lives in the header, next to the case name. */
+.rc-header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    font-size: var(--text-sm);
+}
+
+.rc-header-meta-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+}
+
+.rc-header-meta-label {
+    color: var(--color-text-muted);
+}
+
+.run-case-panel > .error-message,
+.run-case-panel > .empty-state,
+.run-case-panel > .loading {
+    padding: var(--space-4);
+    margin: 0;
+}
+
+/* The single scroll for the whole inspector. */
+.rc-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* Sections separated by spacing + thin dividers, no nested boxes. */
+.rc-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.rc-section + .rc-section {
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+}
+
+.rc-section-title {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.rc-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.rc-edit {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: var(--text-sm);
+    color: var(--color-primary);
+    cursor: pointer;
+}
+
+.rc-edit:hover {
+    text-decoration: underline;
+}
+
+/* Preconditions: compact by default (3 lines), expandable. */
+.rc-prec {
+    margin: 0;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.rc-prec.collapsed {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Steps: the central block — larger heading, roomy rows, clear dividers. */
+.rc-steps-title {
+    font-size: var(--text-lg);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--color-text);
+}
+
+.rc-steps-empty {
+    color: var(--color-text-muted);
+}
+
+.rc-steps-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.rc-step {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    align-items: start;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    transition: background-color 0.12s ease;
+}
+
+.rc-step:last-child {
+    border-bottom: none;
+}
+
+.rc-step:hover {
+    background: var(--color-surface-muted);
+}
+
+.rc-step-check {
+    margin-top: 3px;
+}
+
+.rc-step-num {
+    font-weight: 700;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+    min-width: 1.4em;
+}
+
+.rc-step.done .rc-step-num,
+.rc-step.done .rc-step-text {
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+}
+
+/* Action / Expected result as a cause→effect pair: side by side when there's
+   width (≥260px per column), auto-stacking into one column when narrow. */
+.rc-step-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-3) var(--space-5);
+    min-width: 0;
+}
+
+.rc-step-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.rc-step-label {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+}
+
+.rc-step-text {
+    margin: 0;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* Run details meta. */
+.rc-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-1) var(--space-4);
+    margin: 0;
+    font-size: var(--text-sm);
+}
+
+.rc-meta dt {
+    color: var(--color-text-muted);
+}
+
+.rc-meta dd {
+    margin: 0;
+}
+
+.rc-meta-empty {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+/* ---------- Result block (last section, under the steps) ---------- */
+
+/* A self-contained card at the end of the body — the result is graded after
+   reading through the steps. */
+.rc-result {
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+/* It's already boxed; drop the inter-section divider/extra top padding. */
+.rc-section + .rc-result {
+    padding-top: var(--space-3);
+    border-top: none;
+}
+
+.rc-result-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+/* Full-width segmented control. */
+.rc-seg {
+    display: flex;
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.rc-seg-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-1);
+    font-family: inherit;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+    border: none;
+    border-right: 1px solid var(--color-border);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.rc-seg-btn:last-child {
+    border-right: none;
+}
+
+.rc-seg-btn::before {
+    content: '';
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
+}
+
+.rc-seg-btn.passed::before { background: var(--status-passed); }
+.rc-seg-btn.failed::before { background: var(--status-failed); }
+.rc-seg-btn.blocked::before { background: var(--status-blocked); }
+.rc-seg-btn.skipped::before { background: var(--status-skipped); }
+
+.rc-seg-btn:hover {
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+}
+
+.rc-seg-btn.active {
+    color: var(--color-on-primary);
+}
+
+.rc-seg-btn.active::before {
+    background: var(--color-on-primary);
+}
+
+.rc-seg-btn.passed.active { background: var(--status-passed); }
+.rc-seg-btn.failed.active { background: var(--status-failed); }
+.rc-seg-btn.blocked.active { background: var(--status-blocked); }
+.rc-seg-btn.skipped.active { background: var(--status-skipped); }
+
+/* Comment: always editable, saved independently of the status. */
+.rc-comment-row {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-2);
+}
+
+.rc-comment {
+    flex: 1;
+    min-width: 0;
+}
+
+.rc-comment-save {
     flex-shrink: 0;
 }
 
-/* Цвета индикаторов статусов (менее яркие) */
-.status-indicator.not_run {
-    background-color: var(--status-not-run);
-}
-
-.status-indicator.blocked {
-    background-color: var(--status-blocked);
-}
-
-.status-indicator.passed {
-    background-color: var(--status-passed);
-}
-
-.status-indicator.failed {
-    background-color: var(--status-failed);
-}
-
-.status-indicator.skipped {
-    background-color: var(--status-skipped);
-}
-
-/* Кнопки смены статуса (приглушенные цвета) */
-.status-button {
+.rc-reset {
+    padding: 0;
     border: none;
-    padding: 5px 10px;
-    margin: 3px;
-    border-radius: 5px;
-    font-size: 12px;
+    background: none;
+    font: inherit;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
     cursor: pointer;
-    transition: 0.2s;
-    opacity: 0.85;
 }
 
-/* Более мягкие цвета кнопок */
-.status-button.not_run {
-    background-color: var(--status-btn-not-run);
-    color: #ddd;
+.rc-reset:hover:not(:disabled) {
+    color: var(--color-text);
+    text-decoration: underline;
 }
 
-.status-button.blocked {
-    background-color: var(--status-btn-blocked);
-    color: #ddd;
+.rc-seg-btn:disabled,
+.rc-reset:disabled {
+    opacity: 0.6;
+    cursor: default;
 }
 
-.status-button.passed {
-    background-color: var(--status-btn-passed);
-    color: #ddd;
-}
+/* ---------- Responsive: stack into a full-width drawer ---------- */
 
-.status-button.failed {
-    background-color: var(--status-btn-failed);
-    color: #ddd;
-}
+@media (max-width: 1100px) {
+    .run-detail-layout {
+        flex-direction: column;
+    }
 
-.status-button.skipped {
-    background-color: var(--status-btn-skipped);
-    color: #ddd;
-}
+    .run-detail-layout .table-container {
+        max-width: none;
+        width: 100%;
+    }
 
-.status-button:hover {
-    opacity: 1;
+    .run-case-panel,
+    .run-case-placeholder {
+        flex: none;
+        width: 100%;
+    }
+
+    .run-case-panel {
+        position: static;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+
+    .rc-body {
+        overflow: visible;
+    }
 }

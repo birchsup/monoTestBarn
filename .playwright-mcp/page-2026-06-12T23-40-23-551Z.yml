@@ -1,0 +1,85 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5] [cursor=pointer]:
+      - img "TestBarn Logo" [ref=e6]
+      - text: TestBarn
+    - navigation [ref=e7]:
+      - button "Test Cases" [ref=e8] [cursor=pointer]
+      - button "Test Suites" [ref=e9] [cursor=pointer]
+      - button "Test Runs" [ref=e10] [cursor=pointer]
+    - button "New Test Case" [ref=e11] [cursor=pointer]
+  - main [ref=e12]:
+    - generic [ref=e13]:
+      - heading "Run of suite \"Smoke\"" [level=1] [ref=e15]
+      - generic [ref=e16]:
+        - img [ref=e18]
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: Passed
+            - generic [ref=e22]: "1"
+          - generic [ref=e23]:
+            - generic [ref=e24]: Failed
+            - generic [ref=e25]: "1"
+          - generic [ref=e26]:
+            - generic [ref=e27]: Blocked
+            - generic [ref=e28]: "0"
+          - generic [ref=e29]:
+            - generic [ref=e30]: Skipped
+            - generic [ref=e31]: "0"
+          - generic [ref=e32]:
+            - generic [ref=e33]: Not run
+            - generic [ref=e34]: "0"
+      - generic [ref=e35]:
+        - generic [ref=e36]: Filter by status
+        - combobox "Filter by status" [ref=e37]:
+          - option "All" [selected]
+          - option "Passed"
+          - option "Failed"
+          - option "Blocked"
+          - option "Skipped"
+          - option "Not run"
+      - table [ref=e39]:
+        - rowgroup [ref=e40]:
+          - row "ID Name Status Comment Set Status" [ref=e41]:
+            - columnheader [ref=e42]:
+              - checkbox [ref=e43] [cursor=pointer]
+            - columnheader "ID" [ref=e44]
+            - columnheader "Name" [ref=e45]
+            - columnheader "Status" [ref=e46]
+            - columnheader "Comment" [ref=e47]
+            - columnheader "Set Status" [ref=e48]
+        - rowgroup [ref=e49]:
+          - row "1 йцу Passed Status changed to passed Passed Failed Blocked Skipped Not run" [ref=e50]:
+            - cell [ref=e51]:
+              - checkbox [ref=e52] [cursor=pointer]
+            - cell "1" [ref=e53]
+            - cell "йцу" [ref=e54]:
+              - link "йцу" [ref=e55] [cursor=pointer]:
+                - /url: /test-runs/2/cases/1
+            - cell "Passed" [ref=e56]:
+              - generic [ref=e57]: Passed
+            - cell "Status changed to passed" [ref=e58]
+            - cell "Passed Failed Blocked Skipped Not run" [ref=e59]:
+              - generic [ref=e60]:
+                - button "Passed" [disabled] [ref=e61]
+                - button "Failed" [ref=e62] [cursor=pointer]
+                - button "Blocked" [ref=e63] [cursor=pointer]
+                - button "Skipped" [ref=e64] [cursor=pointer]
+                - button "Not run" [ref=e65] [cursor=pointer]
+          - row "2 Тестовый поиск в ХХ Failed Status changed to failed Passed Failed Blocked Skipped Not run" [ref=e66]:
+            - cell [ref=e67]:
+              - checkbox [ref=e68] [cursor=pointer]
+            - cell "2" [ref=e69]
+            - cell "Тестовый поиск в ХХ" [ref=e70]:
+              - link "Тестовый поиск в ХХ" [ref=e71] [cursor=pointer]:
+                - /url: /test-runs/2/cases/2
+            - cell "Failed" [ref=e72]:
+              - generic [ref=e73]: Failed
+            - cell "Status changed to failed" [ref=e74]
+            - cell "Passed Failed Blocked Skipped Not run" [ref=e75]:
+              - generic [ref=e76]:
+                - button "Passed" [ref=e77] [cursor=pointer]
+                - button "Failed" [disabled] [ref=e78]
+                - button "Blocked" [ref=e79] [cursor=pointer]
+                - button "Skipped" [ref=e80] [cursor=pointer]
+                - button "Not run" [ref=e81] [cursor=pointer]

@@ -1,71 +1,36 @@
-.test-suite-details-container {
-    padding: 20px;
-    background-color: var(--color-surface-alt);
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.suite-actions {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
 }
 
-.test-suite-details-container h1 {
-    font-size: 2em;
-    margin-bottom: 10px;
+.suite-info-edit {
+    margin-bottom: var(--space-5);
 }
 
-.test-suite-details-container p {
-    font-size: 1.2em;
-    margin-bottom: 20px;
+.suite-empty-cell {
+    color: var(--color-text-muted);
+    text-align: center;
 }
 
-.test-suite-details-container button {
-    margin-bottom: 20px;
+.suite-case-picker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
 }
 
-.test-cases-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.test-cases-table th,
-.test-cases-table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.test-cases-table th {
-    background-color: var(--color-primary);
-    color: var(--color-surface);
-}
-
-.test-cases-table tr:hover {
-    background-color: var(--color-hover);
-}
-
-.test-suite-details-container input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-}
-
-.test-suite-details-container ul {
-    list-style-type: none;
+.suite-case-options {
+    list-style: none;
+    margin: 0;
     padding: 0;
+    max-height: 240px;
+    overflow-y: auto;
 }
 
-.test-suite-details-container ul li {
-    margin: 5px 0;
-}
-
-.test-suite-details-container ul li button {
-    margin-left: 10px;
-}
-
-.clickable-row {
-    cursor: pointer;
-}
-
-.clickable-row:hover {
-    background-color: var(--color-hover);
+.suite-case-options li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-1) 0;
 }

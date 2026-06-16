@@ -156,6 +156,50 @@ func GetTestRunByIDHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, run)
 }
 
+func GetTestRunCaseHandler(w http.ResponseWriter, r *http.Request) {
+	runIDStr := mux.Vars(r)["runId"]
+	caseIDStr := mux.Vars(r)["caseId"]
+	if runIDStr == "" || caseIDStr == "" {
+		writeError(w, http.StatusBadRequest, "missing_path_param", "Missing runId or caseId", map[string]interface{}{
+			"runId":  runIDStr,
+			"caseId": caseIDStr,
+		})
+		return
+	}
+
+	runID, err := strconv.Atoi(runIDStr)
+	if err != nil || runID <= 0 {
+		writeInvalidPathParam(w, "run ID", runIDStr)
+		return
+	}
+
+	caseID, err := strconv.Atoi(caseIDStr)
+	if err != nil || caseID <= 0 {
+		writeInvalidPathParam(w, "case ID", caseIDStr)
+		return
+	}
+
+	details, err := db.GetTestRunCaseByID(runID, caseID)
+	if err != nil {
+		switch {
+		case errors.Is(err, db.ErrTestRunNotFound):
+			writeError(w, http.StatusNotFound, "test_run_not_found", err.Error(), map[string]interface{}{
+				"run_id": runID,
+			})
+		case errors.Is(err, db.ErrTestRunCaseNotFound):
+			writeError(w, http.StatusNotFound, "test_run_case_not_found", err.Error(), map[string]interface{}{
+				"run_id":  runID,
+				"case_id": caseID,
+			})
+		default:
+			writeInternalError(w, err)
+		}
+		return
+	}
+
+	writeJSON(w, http.StatusOK, details)
+}
+
 func UpdateTestRunCaseStatusHandler(w http.ResponseWriter, r *http.Request) {
 	runIDStr := mux.Vars(r)["runId"]
 	caseIDStr := mux.Vars(r)["caseId"]
