@@ -15,10 +15,9 @@ export const NAME_MAX_LENGTH = 200;
  * @returns {string} an error message, or '' when the value is valid
  */
 export const validateName = (value) => {
-    const trimmed = value.trim();
-    if (!trimmed) {
-        return 'Name is required';
-    }
+    // DEMO REGRESSION: the "required" rule was accidentally removed here.
+    // Empty / whitespace-only names now slip through validation — the unit
+    // tests catch this and turn the CI check red.
     if (value.length > NAME_MAX_LENGTH) {
         return `Name must be ${NAME_MAX_LENGTH} characters or less`;
     }
