@@ -1,0 +1,73 @@
+/* Themed dropdown (see Select.js). The trigger reuses the .select skin from
+   theme.css; these rules cover the trigger's text and the portal menu. */
+
+.select-trigger {
+    display: inline-flex;
+    align-items: center;
+    text-align: left;
+    cursor: pointer;
+}
+
+.select-trigger:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.select-trigger.select-open {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.select-value {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.select-placeholder {
+    color: var(--color-text-muted);
+}
+
+/* ---------- Portal menu ---------- */
+
+.select-menu {
+    margin: 0;
+    padding: var(--space-1);
+    list-style: none;
+    max-height: 260px;
+    overflow-y: auto;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 200;
+}
+
+.select-option {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-md);
+    color: var(--color-text);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.select-menu-sm .select-option {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-sm);
+}
+
+.select-option.is-active {
+    background: var(--color-primary-soft);
+}
+
+.select-option.is-selected {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.select-option.is-disabled {
+    color: var(--color-text-muted);
+    cursor: default;
+}
